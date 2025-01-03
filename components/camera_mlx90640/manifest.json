@@ -1,0 +1,9 @@
+{
+  "domain": "camera_mlx90640",
+  "name": "MLX90640 Thermal Camera",
+  "version": "0.0.1",
+  "documentation": "https://github.com/jeffcybulski/M5Stack-ESPHome",
+  "requirements": [],
+  "dependencies": ["i2c"],
+  "codeowners": ["@jeffcybulski"]
+}
