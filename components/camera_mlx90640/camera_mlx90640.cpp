@@ -101,7 +101,7 @@ namespace esphome{
 
         }
         void MLX90640::setup(){
-            // Initialize the the sensor data 
+            // Initialize the sensor data 
                 ESP_LOGI(TAG, "SDA PIN %d ", this->sda_);
                 ESP_LOGI(TAG, "SCL PIN %d ", this->scl_);
                 ESP_LOGI(TAG, "I2C Frequency %d",  this->frequency_);
@@ -112,9 +112,19 @@ namespace esphome{
                 
                 ESP_LOGI(TAG, "Color MinTemp %d ", MINTEMP);
                 ESP_LOGI(TAG, "Color MaxTemp %d ", MAXTEMP);
-                Wire.begin((int)this->sda_, (int)this->scl_, (uint32_t)this->frequency_);
-                Wire.setClock(this->frequency_);  // Increase I2C clock speed to 400kHz. 增加I2C时钟速度到400kHz
-                MLX90640_I2CInit(&Wire);
+
+                // ADDED CODE FOR i2c_id: If i2c_bus_ is set, we use its wire pointer; otherwise, we use normal Wire.
+                if (this->i2c_bus_ != nullptr) {
+                  ESP_LOGI(TAG, "Using i2c_bus_ from set_i2c_bus(...)");
+                  this->wire = this->i2c_bus_->get_wire(); // <-- ADDED CODE
+                } else {
+                  this->wire = &Wire; // Original behavior
+                }
+
+                this->wire->begin((int)this->sda_, (int)this->scl_, (uint32_t)this->frequency_);
+                this->wire->setClock(this->frequency_);  // Increase I2C clock speed to 400kHz. 增加I2C时钟速度到400kHz
+                MLX90640_I2CInit(this->wire);
+
                 int status;
                 uint16_t eeMLX90640[832];  // 32 * 24 = 768
                 if(MLX90640_isConnected(MLX90640_address)){
